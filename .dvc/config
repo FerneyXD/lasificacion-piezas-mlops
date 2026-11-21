@@ -2,3 +2,5 @@
     remote = localremote
 ['remote "localremote"']
     url = /home/fer/dvc-remote
+['remote "s3remote"']
+    url = s3://piezas-industriales-509780086678/dvcstore
