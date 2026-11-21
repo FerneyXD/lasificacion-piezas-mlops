@@ -1,0 +1,13 @@
+# Pipeline de DVC. Solo la primera etapa esta definida como ejemplo.
+# POR COMPLETAR: agregue las etapas train, evaluate y monitor (ver Fase 3 de la guia),
+# declarando para cada una: cmd, deps, params, outs, metrics y/o plots segun corresponda.
+stages:
+  prepare:
+    cmd: python src/prepare.py
+    deps:
+      - src/prepare.py
+      - data/raw
+    params:
+      - data
+    outs:
+      - data/processed

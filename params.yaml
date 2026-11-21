@@ -1,0 +1,27 @@
+data:
+  raw_dir: data/raw            # data/raw/<clase>/*.jpg
+  processed_dir: data/processed
+  val_size: 0.15
+  test_size: 0.15
+  seed: 42
+
+train:
+  experiment_name: industrial-vgg16
+  img_size: 224
+  batch_size: 32
+  epochs_head: 8        # fase 1: solo cabeza nueva (VGG16 congelada)
+  epochs_finetune: 5    # fase 2: se descongelan las ultimas capas
+  lr_head: 0.001
+  lr_finetune: 0.00001
+  unfreeze_last_n: 4
+  dense_units: 256
+  dropout: 0.4
+
+evaluate:
+  threshold: 0.80       # umbral de confianza; <= umbral -> "no-identificadas"
+
+monitor:
+  experiment_name: industrial-monitoring
+  sample_size: 300
+  simulate_drift: false   # true: oscurece + desenfoca las imagenes "actuales"
+  with_model: true        # incluye prediccion y confianza como columnas
