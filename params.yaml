@@ -12,9 +12,9 @@ train:
   epochs_finetune: 3
   lr_head: 0.001
   lr_finetune: 1.0e-05
-  unfreeze_last_n: 6
-  dense_units: 512
-  dropout: 0.5
+  unfreeze_last_n: 4
+  dense_units: 256
+  dropout: 0.4
 evaluate:
   threshold: 0.9
 monitor:
