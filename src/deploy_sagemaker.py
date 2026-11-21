@@ -66,7 +66,7 @@ def deploy_endpoint(role: str, bucket: str, endpoint_name: str, instance_type: s
         raise ValueError("--role y --bucket son obligatorios para desplegar.")
 
     archive = package_saved_model(SAVED_MODEL_DIR, PACKAGE_PATH)
-    session = sagemaker.Session()
+    session = sagemaker.Session(default_bucket=bucket)
     model_data = session.upload_data(
         path=str(archive),
         bucket=bucket,
