@@ -1,6 +1,3 @@
-# Pipeline de DVC. Solo la primera etapa esta definida como ejemplo.
-# POR COMPLETAR: agregue las etapas train, evaluate y monitor (ver Fase 3 de la guia),
-# declarando para cada una: cmd, deps, params, outs, metrics y/o plots segun corresponda.
 stages:
   prepare:
     cmd: python src/prepare.py
@@ -11,3 +8,74 @@ stages:
       - data
     outs:
       - data/processed
+
+  train:
+    cmd: python src/train.py
+    deps:
+      - src/train.py
+      - src/common.py
+      - src/model_utils.py
+      - data/processed/train
+      - data/processed/val
+    params:
+      - data.processed_dir
+      - data.seed
+      - train
+    outs:
+      - models/model.keras
+      - models/saved_model
+      - models/classes.json
+      - models/train_info.json
+    metrics:
+      - reports/train_metrics.json:
+          cache: false
+
+  evaluate:
+    cmd: python src/evaluate.py
+    deps:
+      - src/evaluate.py
+      - src/common.py
+      - src/model_utils.py
+      - models/model.keras
+      - models/classes.json
+      - models/train_info.json
+      - data/processed/test
+    params:
+      - data.processed_dir
+      - train.img_size
+      - train.batch_size
+      - evaluate
+    metrics:
+      - reports/metrics.json:
+          cache: false
+    plots:
+      - reports/threshold_curve.csv:
+          cache: false
+          x: threshold
+          y: accuracy_accepted
+      - reports/confusion_matrix.png:
+          cache: false
+
+  monitor:
+    cmd: python src/monitor.py
+    deps:
+      - src/monitor.py
+      - src/common.py
+      - src/image_features.py
+      - src/model_utils.py
+      - models/model.keras
+      - models/classes.json
+      - data/processed/train
+      - data/processed/test
+    params:
+      - data.processed_dir
+      - data.seed
+      - train.img_size
+      - evaluate.threshold
+      - monitor
+    metrics:
+      - reports/drift.json:
+          cache: false
+    outs:
+      - reports/drift_report.html:
+          cache: false

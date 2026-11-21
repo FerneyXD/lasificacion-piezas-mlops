@@ -1,31 +1,15 @@
 """Lambda disparada por S3 que clasifica y mueve imagenes.
 
-POR COMPLETAR. Consulte la Fase 6 de la guia.
-
 Variables de entorno (se configuran en la Lambda):
   ENDPOINT_NAME     nombre del endpoint de SageMaker
   CLASS_NAMES       clases separadas por coma, en el orden de models/classes.json
   THRESHOLD         umbral de confianza (por defecto 0.80)
   INCOMING_PREFIX   prefijo de entrada (por defecto 'entrada/')
-
-Reglas de negocio:
-  - Solo se procesan objetos cuya clave empiece por INCOMING_PREFIX (y no terminen en '/').
-  - Solo extensiones .jpg .jpeg .png .bmp; el resto se ignora.
-  - Si la probabilidad maxima es ESTRICTAMENTE mayor que THRESHOLD, el archivo se mueve a
-        clasificadas/<clase>/<nombre_archivo>
-    si no, a
-        no-identificadas/<nombre_archivo>
-  - "Mover" en S3 = copiar al destino y borrar el original.
-  - Las claves llegan codificadas en URL (espacios como '+', etc.): decodificarlas.
-
-Contrato con las pruebas (tests/test_lambda.py):
-  - Los clientes deben llamarse `s3` y `smr` (nivel de modulo).
-  - lambda_handler(event, context) devuelve {"processed": [{"key", "dest", "label", "prob"}, ...]}
-    con una entrada por cada imagen procesada (las ignoradas no aparecen).
 """
-import json  # noqa: F401
+import json
 import os
-import urllib.parse  # noqa: F401
+import posixpath
+import urllib.parse
 
 import boto3
 
@@ -39,12 +23,59 @@ INCOMING_PREFIX = os.environ.get("INCOMING_PREFIX", "entrada/")
 OUTPUT_PREFIX = "clasificadas/"
 UNKNOWN_PREFIX = "no-identificadas/"
 
+CONTENT_TYPES = {
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".png": "image/png",
+    ".bmp": "image/bmp",
+}
+
 
 def predict(image_bytes: bytes, content_type: str):
-    """TODO: invocar el endpoint y devolver (clase_predicha, probabilidad)."""
-    raise NotImplementedError
+    """Invoca el endpoint de SageMaker y devuelve (clase_predicha, probabilidad)."""
+    resp = smr.invoke_endpoint(
+        EndpointName=ENDPOINT_NAME,
+        ContentType=content_type,
+        Accept="application/json",
+        Body=image_bytes,
+    )
+    payload = json.loads(resp["Body"].read().decode("utf-8"))
+    probs = payload["predictions"][0]
+    best_idx = max(range(len(probs)), key=lambda i: probs[i])
+    return CLASS_NAMES[best_idx], float(probs[best_idx])
+
+
+def resolve_destination(filename: str, label: str, prob: float) -> str:
+    """Determina la clave de destino en S3 aplicando la regla estricta prob > THRESHOLD."""
+    if prob > THRESHOLD:
+        return f"{OUTPUT_PREFIX}{label}/{filename}"
+    return f"{UNKNOWN_PREFIX}{filename}"
 
 
 def lambda_handler(event, context):
-    """TODO: recorrer event['Records'], aplicar las reglas de negocio y devolver el resumen."""
-    raise NotImplementedError
+    """Recorre event['Records'], clasifica imagenes en INCOMING_PREFIX y las mueve."""
+    processed = []
+    for record in event.get("Records", []):
+        bucket = record["s3"]["bucket"]["name"]
+        raw_key = record["s3"]["object"]["key"]
+        key = urllib.parse.unquote_plus(raw_key)
+
+        if not key.startswith(INCOMING_PREFIX) or key.endswith("/"):
+            continue
+        ext = posixpath.splitext(key)[1].lower()
+        content_type = CONTENT_TYPES.get(ext)
+        if not content_type:
+            continue
+
+        obj = s3.get_object(Bucket=bucket, Key=key)
+        image_bytes = obj["Body"].read()
+        label, prob = predict(image_bytes, content_type)
+
+        filename = posixpath.basename(key)
+        dest = resolve_destination(filename, label, prob)
+        s3.copy_object(Bucket=bucket, Key=dest, CopySource={"Bucket": bucket, "Key": key})
+        s3.delete_object(Bucket=bucket, Key=key)
+
+        processed.append({"key": key, "dest": dest, "label": label, "prob": prob})
+
+    return {"processed": processed}

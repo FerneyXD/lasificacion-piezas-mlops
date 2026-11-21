@@ -1,0 +1,19 @@
+{
+  "dataset_drift": false,
+  "share_of_drifted_columns": 0.0,
+  "number_of_drifted_columns": 0,
+  "number_of_columns": 11,
+  "drifted_columns": [],
+  "reference_dir": "data/processed/train",
+  "current_dir": "data/processed/test",
+  "n_reference": 300,
+  "n_current": 300,
+  "simulate_drift": false,
+  "with_model": true,
+  "threshold": 0.9,
+  "mean_confidence_ref": 0.995613,
+  "mean_confidence_cur": 0.991085,
+  "n_unknown_cur": 8,
+  "pct_unknown_ref": 0.01,
+  "pct_unknown_cur": 0.026667
+}

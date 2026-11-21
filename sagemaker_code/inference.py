@@ -1,21 +1,37 @@
 """Handlers de pre/post-procesamiento para el contenedor TensorFlow Serving de SageMaker.
 
-POR COMPLETAR. Consulte la Fase 5 de la guia.
-
-Contrato del endpoint (la Lambda y las pruebas dependen de esto):
+Contrato del endpoint:
   Entrada : bytes de una imagen con Content-Type image/jpeg o image/png
-  Salida  : JSON {"predictions": [[p_clase_0, p_clase_1, ...]]}  (una lista de probabilidades por imagen)
-
-El modelo exportado YA incluye el preprocesamiento de VGG16: el handler solo debe
-decodificar la imagen, pasarla a RGB, redimensionarla a 224x224 y enviar pixeles 0-255.
+  Salida  : JSON {"predictions": [[p_clase_0, p_clase_1, ...]]}
 """
+import io
+import json
+
+import numpy as np
+from PIL import Image
+
+TARGET_SIZE = (224, 224)
+SUPPORTED_TYPES = {"image/jpeg", "image/jpg", "image/png", "image/bmp", "application/octet-stream"}
 
 
 def input_handler(data, context):
-    """TODO: bytes de imagen -> cuerpo JSON {"instances": [...]} que entiende TF Serving."""
-    raise NotImplementedError
+    """Convierte bytes de imagen a cuerpo JSON {"instances": [...]} para TF Serving."""
+    content_type = (getattr(context, "request_content_type", "") or "").split(";")[0].strip().lower()
+    if content_type not in SUPPORTED_TYPES:
+        raise ValueError(f"Content-Type no soportado: {content_type}")
+
+    raw_bytes = data.read() if hasattr(data, "read") else data
+    with Image.open(io.BytesIO(raw_bytes)) as img:
+        rgb = img.convert("RGB").resize(TARGET_SIZE, Image.BILINEAR)
+        arr = np.asarray(rgb, dtype=np.float32)
+
+    return json.dumps({"instances": [arr.tolist()]})
 
 
 def output_handler(response, context):
-    """TODO: validar el codigo de estado de TF Serving y devolver (contenido, accept_header)."""
-    raise NotImplementedError
+    """Valida la respuesta de TF Serving y retorna (contenido, accept_header)."""
+    if response.status_code != 200:
+        body = response.content.decode("utf-8", errors="replace")
+        raise ValueError(f"Error de TF Serving ({response.status_code}): {body}")
+    accept = getattr(context, "accept_header", None) or "application/json"
+    return response.content, accept
