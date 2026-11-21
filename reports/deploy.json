@@ -1,0 +1,5 @@
+{
+  "endpoint_name": "industrial-vgg16",
+  "model_data": "s3://piezas-industriales-509780086678/models/industrial-vgg16/model.tar.gz",
+  "CLASS_NAMES": "adapter_plate_triangular,bracket_big,clamp_small,engine_part_cooler_round,engine_part_cooler_square,injection_pump,screw,star,tee_connector,thread"
+}

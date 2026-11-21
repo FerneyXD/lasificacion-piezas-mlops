@@ -1,0 +1,4 @@
+lote,n_imagenes,n_no_identificadas,share_of_drifted_columns,dataset_drift,confianza_media_monitor,pct_no_identificadas,clases_clasificadas
+batch_01,60,0,0.0,False,0.998762,0.0,"{""adapter_plate_triangular"": 7, ""bracket_big"": 10, ""clamp_small"": 3, ""engine_part_cooler_round"": 9, ""engine_part_cooler_square"": 5, ""injection_pump"": 7, ""screw"": 3, ""star"": 3, ""tee_connector"": 5, ""thread"": 8}"
+batch_02,60,14,0.3,False,0.916238,0.233333,"{""adapter_plate_triangular"": 8, ""bracket_big"": 8, ""clamp_small"": 1, ""engine_part_cooler_round"": 8, ""injection_pump"": 5, ""screw"": 1, ""star"": 1, ""tee_connector"": 6, ""thread"": 8}"
+batch_03,60,1,0.7,True,0.994822,0.016667,"{""adapter_plate_triangular"": 3, ""bracket_big"": 56}"
