@@ -1,0 +1,6 @@
+outs:
+- md5: bee1388ebfcddd17350368d50fe16273.dir
+  size: 1553940
+  nfiles: 61
+  hash: md5
+  path: batch_03

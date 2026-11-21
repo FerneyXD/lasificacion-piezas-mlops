@@ -1,0 +1,6 @@
+outs:
+- md5: fc5ae5d671f9bcfae9ded229b3327990.dir
+  size: 188604
+  nfiles: 61
+  hash: md5
+  path: batch_02
