@@ -8,13 +8,13 @@ train:
   experiment_name: industrial-vgg16
   img_size: 224
   batch_size: 32
-  epochs_head: 4
-  epochs_finetune: 3
+  epochs_head: 3
+  epochs_finetune: 2
   lr_head: 0.001
-  lr_finetune: 1.0e-05
+  lr_finetune: 3e-05
   unfreeze_last_n: 4
   dense_units: 256
-  dropout: 0.4
+  dropout: 0.35
 evaluate:
   threshold: 0.9
 monitor:

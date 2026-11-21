@@ -13,9 +13,9 @@
   "simulate_drift": false,
   "with_model": true,
   "threshold": 0.9,
-  "mean_confidence_ref": 0.997909,
-  "mean_confidence_cur": 0.995066,
+  "mean_confidence_ref": 0.998597,
+  "mean_confidence_cur": 0.99551,
   "n_unknown_cur": 4,
-  "pct_unknown_ref": 0.01,
+  "pct_unknown_ref": 0.003333,
   "pct_unknown_cur": 0.013333
 }

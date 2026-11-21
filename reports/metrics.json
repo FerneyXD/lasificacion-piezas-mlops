@@ -1,10 +1,10 @@
 {
-  "test_accuracy": 0.994267,
-  "test_f1_macro": 0.994266,
+  "test_accuracy": 0.9948,
+  "test_f1_macro": 0.9948,
   "threshold": 0.9,
   "coverage": 0.9868,
-  "accuracy_accepted": 0.997771,
-  "mean_confidence": 0.995534,
+  "accuracy_accepted": 0.998446,
+  "mean_confidence": 0.995559,
   "n_test": 15000,
   "n_accepted": 14802,
   "n_rejected": 198

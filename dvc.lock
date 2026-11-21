@@ -59,13 +59,13 @@ stages:
           experiment_name: industrial-vgg16
           img_size: 224
           batch_size: 32
-          epochs_head: 4
-          epochs_finetune: 3
+          epochs_head: 3
+          epochs_finetune: 2
           lr_head: 0.001
-          lr_finetune: 1e-05
+          lr_finetune: 3e-05
           unfreeze_last_n: 4
           dense_units: 256
-          dropout: 0.4
+          dropout: 0.35
     outs:
     - path: models/classes.json
       hash: md5
@@ -73,20 +73,20 @@ stages:
       size: 242
     - path: models/model.keras
       hash: md5
-      md5: 93db8e5b8107232d95dbce7a0a6fa558
-      size: 59483649
+      md5: 390dd4b554579ddb6e1978bb638c5fd2
+      size: 59483650
     - path: models/saved_model
       hash: md5
-      md5: 84fdc701682b2c8fd2153147739274b6.dir
-      size: 59934555
+      md5: bb92a906f3a565f8e3b5f0d2f0084b4f.dir
+      size: 59934558
       nfiles: 5
     - path: models/train_info.json
       hash: md5
-      md5: ffd4572c766102ffb2c7de752bd10540
+      md5: 1d96a4deab5d920a46060fa138215c06
       size: 50
     - path: reports/train_metrics.json
       hash: md5
-      md5: bf7bd1a6a13a530393f8978f35399b23
+      md5: f2f70c1f8a6eb1333c413a34dc0b3889
       size: 174
   evaluate:
     cmd: python src/evaluate.py
@@ -102,11 +102,11 @@ stages:
       size: 242
     - path: models/model.keras
       hash: md5
-      md5: 93db8e5b8107232d95dbce7a0a6fa558
-      size: 59483649
+      md5: 390dd4b554579ddb6e1978bb638c5fd2
+      size: 59483650
     - path: models/train_info.json
       hash: md5
-      md5: ffd4572c766102ffb2c7de752bd10540
+      md5: 1d96a4deab5d920a46060fa138215c06
       size: 50
     - path: src/common.py
       hash: md5
@@ -130,15 +130,15 @@ stages:
     outs:
     - path: reports/confusion_matrix.png
       hash: md5
-      md5: fac7eb50989e6db4d0e38c2470b6961a
-      size: 121972
+      md5: 1bf6c6681842ea12a5ac6db22d7dc5eb
+      size: 121930
     - path: reports/metrics.json
       hash: md5
-      md5: 0094efef3213f0f6e2b9b715c2fa4d5f
-      size: 229
+      md5: 4632ceab4ec639ae7e5149c98ec6bf9c
+      size: 225
     - path: reports/threshold_curve.csv
       hash: md5
-      md5: a735b44bacf907ab909a5f28579198dc
+      md5: 22749f51a58f390c488b596f82d47695
       size: 278
   monitor:
     cmd: python src/monitor.py
@@ -159,8 +159,8 @@ stages:
       size: 242
     - path: models/model.keras
       hash: md5
-      md5: 93db8e5b8107232d95dbce7a0a6fa558
-      size: 59483649
+      md5: 390dd4b554579ddb6e1978bb638c5fd2
+      size: 59483650
     - path: src/common.py
       hash: md5
       md5: 35dfd61150f2639ad7fee39185d62484
@@ -191,9 +191,9 @@ stages:
     outs:
     - path: reports/drift.json
       hash: md5
-      md5: 753d0cc563fb79f3ab1aeabe70a9be0f
-      size: 512
+      md5: e52c9914e713ecfebb5dc7c21212d148
+      size: 515
     - path: reports/drift_report.html
       hash: md5
-      md5: 9be6dbf7db8b9a35072bbc99d7d3413c
-      size: 3230010
+      md5: e7902283c0fcf16ee745d0d6a2ab96f4
+      size: 3229764
